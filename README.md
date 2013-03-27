@@ -1,20 +1,20 @@
 # Nitrus
 
- Nitrus is a package-template engine to create dynamic projects from a model using [scriptme](https://github.com/delmosaurio/scriptme)
+ Nitrus is a package-template engine written in [Node.js](http://nodejs.org/) to create dynamic projects from a model using [scriptme](https://github.com/delmosaurio/scriptme) template engine
 
-### Authors
+ *This project still remains as an idea. I'm working on it.*
 
- - Delmo Carrozzo
+### Install
 
-### More Information
-
- This project still remains as an idea. I'm working on it.
+```
+npm install nitrus
+```
 
 ## License 
 
 (The MIT License)
 
-Copyright (c) 2013 Delmo Carrozzo &lt;delmosaurio@gmail.com&gt;
+Copyright (c) 2013 Delmo Carrozzo &lt;dcardev@gmail.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
