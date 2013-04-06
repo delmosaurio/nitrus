@@ -1,0 +1,55 @@
+#!/usr/bin/env node
+
+/*!
+ * Nitrus
+ * Copyright(c) 2013 Delmo Carrozzo <dcardev@gmail.com>
+ * MIT Licensed
+ */
+
+var fs = require('fs')
+  , nitrus = require('../lib/nitrus')
+  , scriptme = require('scriptme');
+
+// args
+var args = process.argv.slice(2);
+
+// usage docs.
+var usage = [
+    ''
+  , '  Usage: nitrus'
+  , ''
+  , '  Commands:'
+  , ''
+  , '  Options:'
+  , ''
+  , '    -v, --version             Display a version of Nitrus'
+  , '    -h, --help                Display this text'
+  , ''
+  , '    --engine                  Display the name the template engine'
+  , ''
+].join('\n');
+
+
+// procces args
+var arg;
+while (args.length) {
+  arg = args.shift();
+  switch (arg) {
+    case '-h':
+    case '--help':
+      console.error(usage);
+      process.exit(1);
+    case '-v':
+    case '--version':
+      console.log(nitrus.version);
+      process.exit(0);
+      break;
+    case '--engine':
+      console.log(nitrus.config.engine);
+      process.exit(0);
+      break;
+    default:
+      console.log('Not supported yet!');
+      process.exit(1);
+  }
+}

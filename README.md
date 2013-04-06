@@ -4,13 +4,13 @@
 
  *This project still remains as an idea. I'm working on it.*
 
-### Install
+### npm  install
 
 ```
 npm install nitrus
 ```
 
-## License 
+## license 
 
 (The MIT License)
 
