@@ -6,29 +6,79 @@
  * MIT Licensed
  */
 
+/**
+  * Module dependencies.
+  */
 var fs = require('fs')
+  , colors = require('colors')
   , nitrus = require('../lib/nitrus')
-  , scriptme = require('scriptme');
+  , scriptme = require('scriptme')
+  , io = require('../lib/utils/io')
+  , cmd = require('../lib/utils/cmdprompt');
+
+colors.setTheme({
+  silly: 'rainbow',
+  input: 'grey',
+  verbose: 'cyan',
+  prompt: 'grey',
+  info: 'green',
+  data: 'grey',
+  owner: 'grey',
+  help: 'cyan',
+  warn: 'yellow',
+  debug: 'blue',
+  error: 'red'
+});
 
 // args
-var args = process.argv.slice(2);
+var   args = process.argv.slice(2)
+    , path = '.'
+    , action = ''
+    , current = '';
+
+
+// options to send
+var options = {};
+options.name = '',
+options.force = false;
+
+/**
+ * The projects maker.
+ */
+var projector = new nitrus.Projector();
+
+projector.on('log', function(msg){
+  console.log(' * project - '.owner,  msg);
+});
+
+/**
+ * The packages maker.
+ */
+var packager = new nitrus.Packager();
+
+packager.on('log', function(msg){
+  console.log(' * package - '.owner,  msg);
+});
 
 // usage docs.
 var usage = [
     ''
-  , '  Usage: nitrus'
+  , '  Usage: nitrus <command>'
   , ''
-  , '  Commands:'
+  , '  where <command> is one of:'
+  , '        init, make, install, add'
+  , ''
   , ''
   , '  Options:'
   , ''
   , '    -v, --version             Display a version of Nitrus'
   , '    -h, --help                Display this text'
   , ''
-  , '    --engine                  Display the name the template engine'
+  , '    --engine                  Display the name of template engine'
   , ''
 ].join('\n');
 
+if (!args.length) { abort(usage); }
 
 // procces args
 var arg;
@@ -37,19 +87,116 @@ while (args.length) {
   switch (arg) {
     case '-h':
     case '--help':
-      console.error(usage);
-      process.exit(1);
+      abort(usage);
     case '-v':
     case '--version':
-      console.log(nitrus.version);
-      process.exit(0);
+      abort(nitrus.version);
       break;
     case '--engine':
-      console.log(nitrus.config.engine);
-      process.exit(0);
+      abort(nitrus.config.engine);
       break;
+    case '--force':
+      options.force = true;
+      break;
+    case 'init':
+      action = 'init';
+      (args.length >= 2) 
+        ? (current = args.shift(), options.name = args.shift())
+        : abort('init requires two argument');
+      break;
+    case 'make':
+      action = 'make';
+      (args.length) 
+        ? (options.name = args.shift())
+        : abort('make requires an argument');
+    break;
+    case 'install':
+      action = 'install';
+      (args.length) 
+        ? (options.name = args.shift())
+        : abort('install requires an argument');
+    break;
+    case 'add':
+      action = 'add';
+      (args.length) 
+        ? (options.name = args.shift())
+        : abort('add requires an argument');
+    break;
     default:
-      console.log('Not supported yet!');
-      process.exit(1);
+      path = arg;
   }
 }
+
+// just do it
+(function(action, current, path, ops){
+  
+  var 
+      fn = function(options) { abort('Unexpected error.'); }
+      , needCheck = false
+      , callback
+      , owner;
+
+  switch (action) {
+    case 'init':
+      if (current != 'project' && current != 'package') {
+        abort('the instruction', current, 'was not found.');
+      }
+      needCheck = true;
+      ops.output = path;
+      fn = current == 'project' ? projector.init : packager.init;
+      owner = current == 'project' ? projector : packager;
+    break;
+    case 'make':
+      if (!ops.name || ops.name == '') {
+        abort('the instruction make was not found. something wrong!');
+      }
+      ops.input = path;
+      if (ops.name.toLowerCase() == 'package') {
+        fn = packager.make;
+        owner = packager;  
+      } else {
+        fn = projector.make;
+        owner = projector;  
+      }
+    break;
+    case 'install':
+      ops.output = path;
+      fn = packager.install;
+      owner = packager;
+    break;
+    case 'add':
+      ops.output = path;
+      fn = packager.add;
+      owner = packager;
+    break;
+    case 'update':
+    case 'compress':
+      abort('the command ' + action + ' is not supported yet!');
+    default:
+      abort('Oop! the action ' + action + ' was not expected.');
+  }
+
+  if (needCheck) {
+
+    io.emptyDirectory(path, function(empty){
+      if (empty) {
+        fn.apply(owner, [ops, callback]);
+      } else {
+        cmd.confirm('destination is not empty, continue? ', function(ok){
+          if (ok) {
+            process.stdin.destroy();
+
+            ops.force = true;
+            fn.apply(owner, [ops, callback]);
+          } else {
+            cmd.abort('aborting');
+          }
+        });
+      }
+    });
+
+  } else {
+    fn.apply(owner, [ops, callback]);
+  }
+
+})(action, current, path, options)

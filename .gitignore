@@ -15,4 +15,6 @@ npm-debug.log
 node_modules
 cache
 test/cases/output
+test/output
 temp.md
+docs
