@@ -1,7 +1,7 @@
 {
   "name": "nitrus",
   "description": "Nitrus is a package-template engine to create dynamic projects from a model using scriptme smart-template engine",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "author": "Delmo Carrozzo <dcardev@gmail.com>",
   "keywords": [
     "templates",
