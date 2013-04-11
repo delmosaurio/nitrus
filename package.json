@@ -18,11 +18,17 @@
   "bin": {
     "nitrus": "./bin/nitrus"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "make test"
+  },
   "dependencies": {
     "scriptme": "*",
     "mkdirp": "~0.3.5",
     "colors": "~0.6.0-1",
     "tar.gz": "~0.1.1"
+  },
+  "devDependencies": {
+    "mocha": "~1.9.0",
+    "should": "~1.2.2"
   }
 }
