@@ -83,6 +83,9 @@ Optional arguments:
 
 ## more information
 
+Nitrus like Nitrous Oxide because helps to make projects faster and the packages are the bottles of nitrous, 
+more bottles more speed.
+
 When I started thinking on this tool, I did it because I worked on projects with different langs
 and I saw that  the source code are different to another in little changes and if you think one solution
 for a program or a module or a function, why you need write every time its precondition changes 
