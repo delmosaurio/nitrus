@@ -66,7 +66,7 @@ var usage = [
   , '  Usage: nitrus <command>'
   , ''
   , '  where <command> is one of:'
-  , '        init, make, install, add'
+  , '        init, apply, make, install, add'
   , ''
   , ''
   , '  Options:'
@@ -75,10 +75,11 @@ var usage = [
   , '    -h, --help                Display this text'
   , ''
   , '    --engine                  Display the name of template engine'
+  , '    --force                   Force override'
   , ''
 ].join('\n');
 
-if (!args.length) { abort(usage); }
+if (!args.length) { cmd.abort(usage); }
 
 // procces args
 var arg;
@@ -87,13 +88,13 @@ while (args.length) {
   switch (arg) {
     case '-h':
     case '--help':
-      abort(usage);
+      cmd.abort(usage);
     case '-v':
     case '--version':
-      abort(nitrus.version);
+      cmd.abort(nitrus.version);
       break;
     case '--engine':
-      abort(nitrus.config.engine);
+      cmd.abort(nitrus.config.engine);
       break;
     case '--force':
       options.force = true;
@@ -102,25 +103,31 @@ while (args.length) {
       action = 'init';
       (args.length >= 2) 
         ? (current = args.shift(), options.name = args.shift())
-        : abort('init requires two argument');
+        : cmd.abort('init requires two argument');
       break;
     case 'make':
       action = 'make';
       (args.length) 
         ? (options.name = args.shift())
-        : abort('make requires an argument');
+        : cmd.abort('make requires an argument');
+    break;
+    case 'apply':
+      action = 'apply';
+      (args.length) 
+        ? (options.name = args.shift())
+        : cmd.abort('apply requires an argument');
     break;
     case 'install':
       action = 'install';
       (args.length) 
         ? (options.name = args.shift())
-        : abort('install requires an argument');
+        : cmd.abort('install requires an argument');
     break;
     case 'add':
       action = 'add';
       (args.length) 
         ? (options.name = args.shift())
-        : abort('add requires an argument');
+        : cmd.abort('add requires an argument');
     break;
     default:
       path = arg;
@@ -131,33 +138,40 @@ while (args.length) {
 (function(action, current, path, ops){
   
   var 
-      fn = function(options) { abort('Unexpected error.'); }
+      fn = function(options) { cmd.abort('Unexpected error.'); }
       , needCheck = false
-      , callback
+      , pathCheck = path
+      , callback = function(err) { cmd.abort(err); }
       , owner;
 
   switch (action) {
     case 'init':
       if (current != 'project' && current != 'package') {
-        abort('the instruction', current, 'was not found.');
+        cmd.abort('the instruction `' + current + '` was not found.');
       }
-      needCheck = true;
-      ops.output = path;
+      if (!ops.name || ops.name == '') {
+        cmd.abort('the instruction init was not found wrong name!');
+      }
+      needCheck = !ops.force;
+      ops.output = pathCheck =  current == 'project' ? path : path + '/nitrus/packages/' + ops.name;
       fn = current == 'project' ? projector.init : packager.init;
       owner = current == 'project' ? projector : packager;
     break;
     case 'make':
       if (!ops.name || ops.name == '') {
-        abort('the instruction make was not found. something wrong!');
+        cmd.abort('the instruction make was not found wrong name!');
       }
       ops.input = path;
-      if (ops.name.toLowerCase() == 'package') {
-        fn = packager.make;
-        owner = packager;  
-      } else {
-        fn = projector.make;
-        owner = projector;  
+      fn = packager.make;
+      owner = packager;
+    break;
+    case 'apply':
+      if (!ops.name || ops.name == '') {
+        cmd.abort('the instruction apply was not found wrong name!');
       }
+      ops.input = path;
+      fn = projector.apply;
+      owner = projector;
     break;
     case 'install':
       ops.output = path;
@@ -171,14 +185,14 @@ while (args.length) {
     break;
     case 'update':
     case 'compress':
-      abort('the command ' + action + ' is not supported yet!');
+      cmd.abort('the command `' + current + action + '` is not supported yet!');
     default:
-      abort('Oop! the action ' + action + ' was not expected.');
+      cmd.abort('Oop! the action `' + current + action + '` was not expected.');
   }
 
   if (needCheck) {
 
-    io.emptyDirectory(path, function(empty){
+    io.emptyDirectory(pathCheck, function(empty){
       if (empty) {
         fn.apply(owner, [ops, callback]);
       } else {
