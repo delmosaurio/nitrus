@@ -1,3 +1,33 @@
 {
-	"copyright": "2013 Nitrus"
+	  "copyright": "2013 Nitrus"
+	, "entity" : [
+			{ 
+				"name" : "movie",
+				"pluralname" : "movies",
+				"properties" : [ 
+					{ "name" : "id", "type" : "int", "key": true },
+					{ "name" : "title", "type" : "string", "length": 255 },
+					{ "name" : "genre", "type" : "string", "length": 255 },
+					{ "name" : "imdbRanking", "type" : "int" }
+				]
+			},
+			{   
+				"name" : "actor",
+				"pluralname" : "actors",
+				"properties" : [
+					{ "name" : "id", "type" : "int", "key": true },
+					{ "name" : "name", "type" : "string", "length": 100 },
+					{ "name" : "lastname", "type" : "string", "length": 100 }
+				]
+			},
+			{   
+				"name" : "director",
+				"pluralname" : "directors",
+				"properties" : [
+					{ "name" : "id", "type" : "int", "key": true },	
+					{ "name" : "name", "type" : "string", "length": 100 },
+					{ "name" : "lastname", "type" : "string", "length": 100 }
+				]
+			}
+	  ]
 }

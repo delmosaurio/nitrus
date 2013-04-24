@@ -81,6 +81,85 @@ Optional arguments:
 	--force   Force to override all output files.
 ```
 
+
+## working with package files
+
+### define the model
+
+```js
+{
+	"target": [
+		  { "name": "movie" }
+		, { "name": "director" }
+		, { "name": "actor" }
+	]
+}
+```
+
+### the package files
+
+```
+package
+  |-- ${target.name}.html
+```
+
+output
+
+```
+project
+  |-- movie.html
+  |-- director.html
+  |-- actor.html
+```
+
+### other file rules
+
+sample target: moVIe
+
+```
+           ${target}.html -> moVIe.html
+lowercase: $-{target}.html -> movie.html
+uppercase: $+{target}.html -> MOVIE.html
+camelcase: $~{target}.html -> Movie.html
+```
+
+## working with layer or folders
+
+### define the model
+
+```js
+{
+	"layer": [
+		  { "data": "Data" }
+		, { "model": "Data/Model" }
+		, { "web": "Web" }
+	]
+}
+```
+### the package layer/folders
+
+```
+package
+  |-- @{layer.data}
+         |-- data-files 
+  |-- @{layer.model}
+         |-- model-files
+  |-- @{layer.web}
+         |-- web-files
+```
+
+output
+
+```
+project
+  |-- Data
+       |-- Model
+             |-- model-files
+       |-- data-files
+  |-- Web
+       |-- web-files
+```
+
 ## more information
 
 Nitrus like Nitrous Oxide because helps to make projects faster and the packages are the bottles of nitrous, 
