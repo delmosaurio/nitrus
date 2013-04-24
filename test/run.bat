@@ -1,7 +1,10 @@
 @echo off
 set output=./output
-set bin=node ./../bin/nitrus
+set bin=node ./bin/nitrus
 
-if exist "%output%" (rmdir /s /q "%output%")
+rem if exist "%output%" (rmdir /s /q "%output%")
 
-mkdir "%output%"
+rem mkdir "%output%"
+
+cd 
+%bin% apply all "./cases/plugin"

@@ -1,6 +1,0 @@
-{
-      "pluginname": "myplugin"
-    , "description": "my jQuery plugin description"
-    , "copyright": "2013 Nitrus"
-    , "funcs" : ["foo", "bar"]
-}
