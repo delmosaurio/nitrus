@@ -1,10 +1,9 @@
 @echo off
-set output=./output
-set bin=node ./bin/nitrus
 
-rem if exist "%output%" (rmdir /s /q "%output%")
+set bin=node ../../../bin/nitrus
 
-rem mkdir "%output%"
+cd "cases/movies"
+%bin% apply all
 
-cd 
-%bin% apply all "./cases/plugin"
+cd ..
+cd ..
