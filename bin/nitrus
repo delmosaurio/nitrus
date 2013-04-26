@@ -10,55 +10,43 @@
   * Module dependencies.
   */
 var fs = require('fs')
-  , colors = require('colors')
   , nitrus = require('../lib/nitrus')
-  , scriptme = require('scriptme')
   , io = require('../lib/utils/io')
   , cmd = require('../lib/utils/cmdprompt');
 
-colors.setTheme({
-  silly: 'rainbow',
-  input: 'grey',
-  verbose: 'cyan',
-  prompt: 'grey',
-  info: 'green',
-  data: 'grey',
-  owner: 'grey',
-  help: 'cyan',
-  warn: 'yellow',
-  debug: 'blue',
-  error: 'red'
-});
-
-// args
-var   args = process.argv.slice(2)
-    , path = '.'
-    , action = ''
-    , current = '';
-
-
-// options to send
-var options = {};
-options.name = '',
-options.force = false;
+/*
+ * Proccess arguments
+ */
+var args = process.argv.slice(2);
 
 /**
- * The projects maker.
+ * Input/output path
  */
-var projector = new nitrus.Projector();
-
-projector.on('log', function(msg){
-  console.log(' * project - '.owner,  msg);
-});
+var path = '.';
 
 /**
- * The packages maker.
+ * An action to call 
+ *    like: init, apply, make, install, add
  */
-var packager = new nitrus.Packager();
+var action = ''
 
-packager.on('log', function(msg){
-  console.log(' * package - '.owner,  msg);
-});
+/**
+ * Preceded by an `action`
+ *    like: project, package
+ */
+var current = '';    
+
+/**
+ * Contains the name of project or package that will be
+ * depends of `action`
+ *    like: all, <packagename>
+ */
+var name = '';
+
+/**
+ * Override an exist file or folder depends of `action`
+ */
+var withForce = false;
 
 // usage docs.
 var usage = [
@@ -66,7 +54,7 @@ var usage = [
   , '  Usage: nitrus <command>'
   , ''
   , '  where <command> is one of:'
-  , '        init, apply, make, install, add'
+  , '        init, apply, pack, install, add'
   , ''
   , ''
   , '  Options:'
@@ -79,6 +67,7 @@ var usage = [
   , ''
 ].join('\n');
 
+// give me args
 if (!args.length) { cmd.abort(usage); }
 
 // procces args
@@ -97,36 +86,36 @@ while (args.length) {
       cmd.abort(nitrus.config.engine);
       break;
     case '--force':
-      options.force = true;
+      withForce = true;
       break;
     case 'init':
       action = 'init';
       (args.length >= 2) 
-        ? (current = args.shift(), options.name = args.shift())
+        ? (current = args.shift(), name = args.shift())
         : cmd.abort('init requires two argument');
       break;
-    case 'make':
-      action = 'make';
+    case 'pack':
+      action = 'pack';
       (args.length) 
-        ? (options.name = args.shift())
-        : cmd.abort('make requires an argument');
+        ? (name = args.shift())
+        : cmd.abort('pack requires an argument');
     break;
     case 'apply':
       action = 'apply';
       (args.length) 
-        ? (options.name = args.shift())
+        ? (name = args.shift())
         : cmd.abort('apply requires an argument');
     break;
     case 'install':
       action = 'install';
       (args.length) 
-        ? (options.name = args.shift())
+        ? (name = args.shift())
         : cmd.abort('install requires an argument');
     break;
     case 'add':
       action = 'add';
       (args.length) 
-        ? (options.name = args.shift())
+        ? (name = args.shift())
         : cmd.abort('add requires an argument');
     break;
     default:
@@ -134,58 +123,93 @@ while (args.length) {
   }
 }
 
-// just do it
-(function(action, current, path, ops){
-  
-  var 
-      fn = function(options) { cmd.abort('Unexpected error.'); }
-      , needCheck = false
-      , pathCheck = path
-      , callback = function(err) { cmd.abort(err); }
-      , owner;
+// 
+// check the action
+if ( !(/^(init|apply|pack|install|add)$/i).test(action) ) {
+  console.log('the action `' + action + '` was not found.');
+  cmd.abort(usage);
+}
 
+// check the instruction
+if ( (/^init$/i).test(action) && !(/^(project|package)$/i).test(current) ) {
+  console.log('the instruction `' + action, current + '` was not found.');
+  cmd.abort(usage);
+}
+
+
+// check if is a valid name
+if ( !(/^(all|[a-zA-Z0-9_\-]+)$/i).test(name) ) {
+  console.log('the instruction `' + action, current, name + '` was not found.');
+  cmd.abort(usage);
+}
+
+// options
+var options = {
+    action: action
+  , current: current
+  , name: name
+  , path: path 
+  , withForce: withForce
+};
+
+// just do it
+(function(nitrus, ops){
+  
+  // options to send
+  var sops = {};
+  sops.force = ops.withForce || false;
+  sops.name = name;
+
+  // the function will be executed
+  // if something wrong abort with a Unexpected error
+  var befn = function() {
+    cmd.abort('Unexpected error.');
+  };
+
+  // the ending function
+  var endfn = function(err) { 
+     if (err) {
+        cmd.abort(err); 
+     }
+
+     console.log('ready!');
+  }
+
+  var   needCheck = false          // to check if the `path` need overrides
+      , pathCheck = ops.path;      // the `path` to check
+      
   switch (action) {
     case 'init':
-      if (current != 'project' && current != 'package') {
-        cmd.abort('the instruction `' + current + '` was not found.');
-      }
-      if (!ops.name || ops.name == '') {
-        cmd.abort('the instruction init was not found wrong name!');
-      }
-      needCheck = !ops.force;
-      ops.output = pathCheck =  current == 'project' ? path : path + '/nitrus/packages/' + ops.name;
-      fn = current == 'project' ? projector.init : packager.init;
-      owner = current == 'project' ? projector : packager;
+      needCheck = !ops.withForce;
+      sops.output = pathCheck = path;
+
+      befn = (current == 'project')
+                ? nitrus.initProject 
+                : nitrus.initPackage
+
     break;
-    case 'make':
-      if (!ops.name || ops.name == '') {
-        cmd.abort('the instruction make was not found wrong name!');
-      }
-      ops.input = path;
-      fn = packager.make;
-      owner = packager;
+    case 'pack':
+      sops.input = path;
+      befn = nitrus.pack;
     break;
     case 'apply':
-      if (!ops.name || ops.name == '') {
-        cmd.abort('the instruction apply was not found wrong name!');
-      }
-      ops.input = path;
-      fn = projector.apply;
-      owner = projector;
+      sops.input = path;
+      sops.output = path;
+      befn =  nitrus.apply;
     break;
     case 'install':
-      ops.output = path;
-      fn = packager.install;
-      owner = packager;
+      needCheck = !ops.withForce;
+      sops.output = path;
+      pathCheck = path + '/nitrus/packages/' + name;
+
+      befn = nitrus.install;
     break;
     case 'add':
-      ops.output = path;
-      fn = packager.add;
-      owner = packager;
+      needCheck = !ops.withForce;
+      sops.output = path;
+      pathCheck = path + '/nitrus/packages/' + name;
+      befn = packager.add;
     break;
-    case 'update':
-    case 'compress':
-      cmd.abort('the command `' + current + action + '` is not supported yet!');
     default:
       cmd.abort('Oop! the action `' + current + action + '` was not expected.');
   }
@@ -194,23 +218,23 @@ while (args.length) {
 
     io.emptyDirectory(pathCheck, function(empty){
       if (empty) {
-        fn.apply(owner, [ops, callback]);
+        befn.apply(nitrus, [sops, endfn]);
       } else {
         cmd.confirm('destination is not empty, continue? ', function(ok){
           if (ok) {
             process.stdin.destroy();
 
-            ops.force = true;
-            fn.apply(owner, [ops, callback]);
+            sops.force = true;
+            befn.apply(nitrus, [sops, endfn]);
           } else {
-            cmd.abort('aborting');
+            cmd.abort('aborted');
           }
         });
       }
     });
 
   } else {
-    fn.apply(owner, [ops, callback]);
+    befn.apply(nitrus, [sops, endfn]);
   }
 
-})(action, current, path, options)
+})(nitrus, options)
