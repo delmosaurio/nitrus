@@ -162,20 +162,20 @@ project
 
 ## more information
 
-Nitrus like Nitrous Oxide because helps to make projects faster and the packages are the bottles of nitrous, 
+Nitrus like Nitrous Oxide helps to make projects faster and the packages are like bottles of nitrous, 
 more bottles more speed.
 
 When I started thinking on this tool, I did it because I worked on projects with different langs
-and I saw that  the source code are different to another in little changes and if you think one solution
+and I saw that  the source code are different to another on little changes and if you think one solution
 for a program or a module or a function, why you need write every time its precondition changes 
 or when the technology change?, so i started thinking in intelligent templates with inputs params
 to get an usefull output, imagine if you can make an index.html template for your web projects and 
 when you start a new web project copy its template and change only the title, this tool help to make this
-task easily and you can also use this tool for change the title at runtime too.
-I worked on developing an Personal ORM and use this formula for it but this project is writen in C#.Net and
-is not multiplataform and i wanted share this tool on this lang but would be leaving out to many people and 
-then i discovered Node.js and i loved.
-So i'm here writing js code i not so good (a little newbie) but i will try to give the best.
+task easily and you can also use it to change the title at runtime too.
+I worked on develop an Personal ORM and use this formula for it but this project is written in C#.Net but
+is not a multiplataform then i wanted to share this tool but too many people have been left out. 
+After that i discovered Node.js and i loved it, so i'm here writing js code i not so good at it (a little newbie) 
+but i will try to give my best.
 
 NOTE: Sorry for my bad english i working on it but, i'm write source code nothing else matters.
 
