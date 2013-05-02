@@ -68,14 +68,14 @@ project/nitrus/packages
 		|-nspackage.json
 ```
 
-Make the project
+Apply packages to the project
 
 ```
-$ nitrus make <all|package> [options] [path]
+$ nitrus apply <all|package> [options] [path]
 
 arguments:
-	all                make all packages
-	package            make the <package> installed in the project
+	all                apply all packages
+	package            apply the <package> installed in the project
 	
 Optional arguments:
 	--force   Force to override all output files.
