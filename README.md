@@ -1,4 +1,4 @@
-# Nitrus [![Build Status](https://secure.travis-ci.org/delmosaurio/nitrus.png)](http://travis-ci.org/delmosaurio/nitrus) - under development 
+# [Nitrus} [![Build Status](https://secure.travis-ci.org/delmosaurio/nitrus.png)](http://travis-ci.org/delmosaurio/nitrus) - under development 
 
  Nitrus is a package-template engine written in [Node.js](http://nodejs.org/) to create dynamic projects from a model using [scriptme](https://github.com/delmosaurio/scriptme) template engine
 
