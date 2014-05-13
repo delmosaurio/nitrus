@@ -1,8 +1,10 @@
-# Nitrus
+# \[Nitrus} [![Build Status](https://secure.travis-ci.org/delmosaurio/nitrus.png)](http://travis-ci.org/delmosaurio/nitrus) - under development
 
- Nitrus is a package-template engine written in [Node.js](http://nodejs.org/) to create dynamic projects from a model using [scriptme](https://github.com/delmosaurio/scriptme) template engine
+Nitrus is a package-template engine written in [Node.js](http://nodejs.org/) to create dynamic projects from a model
 
- *This project still remains as an idea. I'm working on it.*
+## Info
+
+Nitrus (like Nitrous Oxide) helps to make projects faster, install packages like bottles of nitrous, more bottles more speed.
 
 ### Install
 
@@ -14,7 +16,7 @@ npm install nitrus
 
 (The MIT License)
 
-Copyright (c) 2013 Delmo Carrozzo &lt;dcardev@gmail.com&gt;
+Copyright (c) 2013-2014 Delmo Carrozzo &lt;dcardev@gmail.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
