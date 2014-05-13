@@ -1,15 +1,14 @@
 {   "name": "nitrus"
-  , "description": "Nitrus is a package-template engine to create dynamic projects from a model using scriptme smart-template engine"
-  , "version": "0.0.0"
+  , "description": "Nitrus is a package-template engine to create dynamic projects from a model"
+  , "version": "0.1.0"
   , "author": "Delmo Carrozzo <dcardev@gmail.com>"
   , "keywords": ["templates", "projects"]
   , "repository": {
     "type": "git",
     "url": "https://github.com/delmosaurio/nitrus.git"
   }
-  , "main": "./index.js"
+  , "main": "index.js"
   , "engines": { "node": "*" }
-  , "bin": { "nitrus": "./bin/nitrus" }
   , "scripts" : {  }
-  , "dependencies": { "scriptme":"0.0.0" }
+  , "dependencies": { }
 }
