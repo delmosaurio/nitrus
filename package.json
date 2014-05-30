@@ -1,14 +1,24 @@
-{   "name": "nitrus"
-  , "description": "Nitrus is a package-template engine to create dynamic projects from a model"
-  , "version": "0.1.0"
-  , "author": "Delmo Carrozzo <dcardev@gmail.com>"
-  , "keywords": ["templates", "projects"]
-  , "repository": {
+{
+  "name": "nitrus",
+  "description": "Nitrus is a package-template engine to create dynamic projects from a model",
+  "version": "0.1.0",
+  "author": "Delmo Carrozzo <dcardev@gmail.com>",
+  "keywords": [
+    "templates",
+    "projects"
+  ],
+  "repository": {
     "type": "git",
     "url": "https://github.com/delmosaurio/nitrus.git"
+  },
+  "main": "index.js",
+  "engines": {
+    "node": "*"
+  },
+  "scripts": {},
+  "dependencies": {
+    "file-gateway": "0.0.37",
+    "extend": "^1.2.1",
+    "mkdirp": "^0.5.0"
   }
-  , "main": "index.js"
-  , "engines": { "node": "*" }
-  , "scripts" : {  }
-  , "dependencies": { }
 }
