@@ -15,10 +15,20 @@
   "engines": {
     "node": "*"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "mocha test/run.js"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "grunt": "^0.4.5",
+    "grunt-contrib-coffee": "^0.11.1",
+    "grunt-contrib-watch": "^0.6.1"
+  },
   "dependencies": {
-    "file-gateway": "0.0.37",
-    "extend": "^1.2.1",
-    "mkdirp": "^0.5.0"
+    "extend": "^1.3.0",
+    "async": "^0.9.0",
+    "ejs": "^1.0.0",
+    "mkdirp": "^0.5.0",
+    "file-gateway": "0.0.37"
   }
 }
