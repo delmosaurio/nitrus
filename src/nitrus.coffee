@@ -3,9 +3,14 @@
 {EventEmitter} = require 'events'
 path = require 'path'
 fs = require 'fs'
-NitrusFiles = require './nitrus/nitrus-fs.js'
 mkdirp = require 'mkdirp'
 async = require 'async'
+log = require './nitrus/nitrus-log.js'
+NitrusFiles = require './nitrus/nitrus-fs.js'
+NitrusBuilder = require './nitrus/nitrus-builder.js'
+
+# allow require() coffee files
+require 'coffee-script/register'
 
 class Nitrus extends EventEmitter
   constructor: (dir) ->
@@ -13,6 +18,8 @@ class Nitrus extends EventEmitter
     @CONF_PATH      = path.join @PATH, ".nitrus"
     @NITRUS_MODULES = path.join @PATH, "nitrus_modules"
     @fs             = new NitrusFiles @CONF_PATH
+    @log            = log
+    @builder        = new NitrusBuilder @
   init: (ops) ->
     ops ?= {}
     cofe = ops.coffee is yes or false
@@ -42,12 +49,27 @@ class Nitrus extends EventEmitter
         return @emit 'error', err if err
         @emit 'init', { path: @CONF_PATH, created: fs.existsSync @CONF_PATH }
     @
+  initConfig: (ops) ->
+    return no if !ops
+    
+    return no if !ops.model
+
+    @model = ops.model
+
+    yes
+  load: ->
+    getConfigFilename @PATH, (err, filename) =>
+      return @emit 'error', err if err
+      return @emit 'error', new Error 'Not configuration file' if !filename
+      @emit 'ready' if require("#{@PATH}/#{filename}")(@)
+    @
   install: ->
     throw new Error 'install Not implemented yet!'
   add: ->
     throw new Error 'add Not implemented yet!'
-  build: ->
-    throw new Error 'build Not implemented yet!'
+  build: (ops)->
+    @builder.build ops
+    @
   watch: ->
     throw new Error 'watch Not implemented yet!'
 
@@ -73,6 +95,12 @@ class Nitrus extends EventEmitter
       return fn er if er
       for file in files
         return fn null, yes if (/(nitrusfile.js|nitrusfile.coffee)/i).test(file)
-      fn no
+      fn null, no
+  getConfigFilename = (dir, fn) ->
+    fs.readdir dir, (er, files) ->
+      return fn er if er
+      for file in files
+        return fn null, file if (/(nitrusfile.js|nitrusfile.coffee)/i).test(file)
+      fn null
 
 module.exports = Nitrus
